@@ -26,6 +26,7 @@ class App {
                 "등록" -> wiseSayingController.actionWrite(rq)
                 "목록" -> wiseSayingController.actionList(rq)
                 "삭제" -> wiseSayingController.actionDelete(rq)
+                "수정" -> wiseSayingController.actionModify(rq)
             }
         }
     }
