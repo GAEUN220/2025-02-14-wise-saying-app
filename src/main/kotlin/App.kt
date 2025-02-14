@@ -50,7 +50,7 @@ class App {
                     if (removed) {
                         println("${id}번 명언이 삭제되었습니다.")
                     } else {
-                        println("해당 명언은 존재하지 않습니다.")
+                        println("${id}번 명언은 존재하지 않습니다.")
                     }
                 }
                 else -> println("알 수 없는 명령어입니다.")
