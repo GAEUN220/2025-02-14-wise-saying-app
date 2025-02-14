@@ -12,48 +12,52 @@ class App {
             print("명령) ")
             val input = readlnOrNull()!!.trim()
 
-            when {
-                input == "종료" -> {
-                    break
-                } input == "등록" -> {
-                    print("명언 : ")
-                    val content = readlnOrNull()!!.trim()
-                    print("작가 : ")
-                    val author = readlnOrNull()!!.trim()
+            val rq = Rq(input)
 
-                    val id = ++lastId
-                    wiseSayings.add(WiseSaying(id, content, author))
+            if (rq.action == "종료") {
+                break
+            } else if (rq.action == "등록") {
+                print("명언 : ")
+                val content = readlnOrNull()!!.trim()
+                print("작가 : ")
+                val author = readlnOrNull()!!.trim()
 
-                    println("${id}번 명언이 등록되었습니다.")
-                } input == "목록" -> {
-                    if (wiseSayings.isEmpty()) {
-                        println("등록된 명언이 없습니다.")
-                    } else {
-                        println("번호 / 작가 / 명언")
-                        println("----------------------")
+                val id = ++lastId
 
-                        wiseSayings.reversed().forEach {
-                            println("${it.id} / ${it.author} / ${it.content}")
-                        }
-                    }
-                } input.startsWith("삭제?id=") -> {
-                    val idStr = input.substringAfter("삭제?id=")
-                    val id = idStr.toIntOrNull()
+                wiseSayings.add(WiseSaying(id, content, author))
 
-                    if (id == null ) {
-                        println("잘못된 id 형식입니다.")
-                        continue
-                    }
-
-                    val removed = wiseSayings.removeIf{ it.id == id }
-
-                    if (removed) {
-                        println("${id}번 명언이 삭제되었습니다.")
-                    } else {
-                        println("${id}번 명언은 존재하지 않습니다.")
-                    }
+                println("${id}번 명언이 등록되었습니다.")
+            } else if (rq.action == "목록") {
+                if (wiseSayings.isEmpty()) {
+                    println("등록된 명언이 없습니다.")
+                    continue
                 }
-                else -> println("알 수 없는 명령어입니다.")
+
+                println("번호 / 작가 / 명언")
+
+                println("----------------------")
+
+                wiseSayings.forEach {
+                    println("${it.id} / ${it.author} / ${it.content}")
+                }
+            } else if (rq.action == "삭제") {
+                val id = rq.getParamValueAsInt("id", 0)
+
+                if (id == 0) {
+                    println("id를 정확히 입력해주세요.")
+                    continue
+                }
+
+                val wiseSaying = wiseSayings.firstOrNull { it.id == id }
+
+                if (wiseSaying == null) {
+                    println("해당 id의 명언은 존재하지 않습니다.")
+                    continue
+                }
+
+                wiseSayings.remove(wiseSaying)
+
+                println("${id}번 명언을 삭제하였습니다.")
             }
         }
     }
