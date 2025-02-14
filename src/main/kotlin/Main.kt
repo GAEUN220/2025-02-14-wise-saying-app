@@ -1,6 +1,8 @@
 package com.ll
 
 fun main() {
+    var lastId = 0
+
     println("== 명언 앱 ==")
 
     while (true) {
@@ -16,7 +18,9 @@ fun main() {
             print("작가 : ")
             val author = readLine()
 
-            println("1번 명언이 등록되었습니다.")
+            lastId ++
+
+            println("%d번 명언이 등록되었습니다.".format(lastId))
         }
     }
 }
