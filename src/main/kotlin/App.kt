@@ -1,13 +1,11 @@
 package com.ll
 
-import com.ll.domain.system.system.controller.SystemController
-import com.ll.domain.wiseSaying.wiseSaying.controller.WiseSayingController
+import com.ll.global.bean.SingletonScope.systemController
+import com.ll.global.bean.SingletonScope.wiseSayingController
+import com.ll.global.rq.Rq
 
 class App {
     fun run() {
-        val wiseSayingController = WiseSayingController()
-        val systemController = SystemController()
-
         println("== 명언 앱 ==")
 
         while (true) {

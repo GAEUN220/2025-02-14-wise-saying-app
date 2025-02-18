@@ -1,6 +1,6 @@
 package com.ll.domain.system.system.controller
 
-import com.ll.Rq
+import com.ll.global.rq.Rq
 
 class SystemController {
     fun actionExit(rq: Rq) {
