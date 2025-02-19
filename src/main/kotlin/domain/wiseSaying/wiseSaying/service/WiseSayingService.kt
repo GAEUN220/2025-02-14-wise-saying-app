@@ -1,7 +1,9 @@
+
 package com.ll.domain.wiseSaying.wiseSaying.service
 
 import com.ll.domain.wiseSaying.wiseSaying.entity.WiseSaying
 import com.ll.global.bean.SingletonScope
+import com.ll.standard.dto.Page
 
 class WiseSayingService {
     private val wiseSayingRepository = SingletonScope.wiseSayingRepository
@@ -15,7 +17,7 @@ class WiseSayingService {
     }
 
     fun findByKeyword(keywordType: String, keyword: String): List<WiseSaying> {
-        return when ( keywordType ) {
+        return when (keywordType) {
             "author" -> wiseSayingRepository.findByAuthorLike("%$keyword%")
             else -> wiseSayingRepository.findByAuthorContent("%$keyword%")
         }
@@ -23,6 +25,10 @@ class WiseSayingService {
 
     fun findAll(): List<WiseSaying> {
         return wiseSayingRepository.findAll()
+    }
+
+    fun findAllPaged(itemsPerPage: Int, pageNo: Int): Page<WiseSaying> {
+        return wiseSayingRepository.findAllPaged(itemsPerPage, pageNo)
     }
 
     fun findById(id: Int): WiseSaying? {
@@ -41,5 +47,9 @@ class WiseSayingService {
 
     fun build() {
         wiseSayingRepository.build()
+    }
+
+    fun findByKeywordPaged(keywordType: String, keyword: String, itemsPerPage: Int, pageNo: Int): Page<WiseSaying> {
+        return wiseSayingRepository.findByKeywordPaged(keywordType, keyword, itemsPerPage, pageNo)
     }
 }

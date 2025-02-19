@@ -2,6 +2,7 @@
 package com.ll.domain.wiseSaying.wiseSaying.repository
 
 import com.ll.domain.wiseSaying.wiseSaying.entity.WiseSaying
+import com.ll.standard.dto.Page
 
 class WiseSayingMemoryRepository : WiseSayingRepository {
     private var lastId = 0
@@ -21,7 +22,7 @@ class WiseSayingMemoryRepository : WiseSayingRepository {
     }
 
     override fun findAll(): List<WiseSaying> {
-        return wiseSayings
+        return wiseSayings.reversed()
     }
 
     override fun findById(id: Int): WiseSaying? {
@@ -38,34 +39,66 @@ class WiseSayingMemoryRepository : WiseSayingRepository {
     }
 
     override fun build() {}
+
     override fun findByAuthorLike(authorLike: String): List<WiseSaying> {
         val pureKeyword = authorLike.replace("%", "")
+
         if (pureKeyword.isBlank()) {
             return wiseSayings
         }
+
         return if (authorLike.startsWith("%") && authorLike.endsWith("%")) {
-            wiseSayings.filter { it.author.contains(pureKeyword) }
+            findAll().filter { it.author.contains(pureKeyword) }
         } else if (authorLike.startsWith("%")) {
-            wiseSayings.filter { it.author.endsWith(pureKeyword) }
+            findAll().filter { it.author.endsWith(pureKeyword) }
         } else if (authorLike.endsWith("%")) {
-            wiseSayings.filter { it.author.startsWith(pureKeyword) }
+            findAll().filter { it.author.startsWith(pureKeyword) }
         } else {
-            wiseSayings.filter { it.author == pureKeyword }
+            findAll().filter { it.author == pureKeyword }
         }
     }
+
     override fun findByAuthorContent(contentLike: String): List<WiseSaying> {
         val pureKeyword = contentLike.replace("%", "")
+
         if (pureKeyword.isBlank()) {
             return wiseSayings
         }
+
         return if (contentLike.startsWith("%") && contentLike.endsWith("%")) {
-            wiseSayings.filter { it.content.contains(pureKeyword) }
+            findAll().filter { it.content.contains(pureKeyword) }
         } else if (contentLike.startsWith("%")) {
-            wiseSayings.filter { it.content.endsWith(pureKeyword) }
+            findAll().filter { it.content.endsWith(pureKeyword) }
         } else if (contentLike.endsWith("%")) {
-            wiseSayings.filter { it.content.startsWith(pureKeyword) }
+            findAll().filter { it.content.startsWith(pureKeyword) }
         } else {
-            wiseSayings.filter { it.content == pureKeyword }
+            findAll().filter { it.content == pureKeyword }
+        }
+    }
+
+    override fun findAllPaged(itemsPerPage: Int, pageNo: Int): Page<WiseSaying> {
+        val content = findAll()
+            .drop((pageNo - 1) * itemsPerPage)
+            .take(itemsPerPage)
+
+        return Page(wiseSayings.size, itemsPerPage, pageNo, "", "", content)
+    }
+
+    override fun findByKeywordPaged(
+        keywordType: String,
+        keyword: String,
+        itemsPerPage: Int,
+        pageNo: Int
+    ): Page<WiseSaying> {
+        return when (keywordType) {
+            "author" -> findByAuthorLike("%$keyword%")
+            else -> findByAuthorContent("%$keyword%")
+        }.let {
+            val content = it
+                .drop((pageNo - 1) * itemsPerPage)
+                .take(itemsPerPage)
+
+            Page(it.size, itemsPerPage, pageNo, keywordType, keyword, content)
         }
     }
 }
