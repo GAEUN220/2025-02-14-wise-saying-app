@@ -6,19 +6,13 @@ import com.ll.global.app.AppConfig
 import java.nio.file.Path
 
 class WiseSayingFileRepository : WiseSayingRepository {
-    private var lastId = 0
-    private val wiseSayings = mutableListOf<WiseSaying>()
-
     val tableDirPath: Path
         get() {
             return AppConfig.dbDirPath.resolve("wiseSaying")
         }
 
     override fun save(wiseSaying: WiseSaying): WiseSaying {
-        if (wiseSaying.isNew()) {
-            wiseSaying.id = ++lastId
-            wiseSayings.add(wiseSaying)
-        }
+        if (wiseSaying.isNew()) wiseSaying.id = loadLastIdAndIncrease()
 
         saveOnDisk(wiseSaying)
 
@@ -26,11 +20,11 @@ class WiseSayingFileRepository : WiseSayingRepository {
     }
 
     override fun isEmpty(): Boolean {
-        return wiseSayings.isEmpty()
+        return true
     }
 
     override fun findAll(): List<WiseSaying> {
-        return wiseSayings
+        return listOf()
     }
 
     override fun findById(id: Int): WiseSaying? {
@@ -42,13 +36,9 @@ class WiseSayingFileRepository : WiseSayingRepository {
     }
 
     override fun delete(wiseSaying: WiseSaying) {
-        wiseSayings.remove(wiseSaying)
     }
 
     override fun clear() {
-        lastId = 0
-        wiseSayings.clear()
-
         tableDirPath.toFile().deleteRecursively()
     }
 
@@ -65,5 +55,30 @@ class WiseSayingFileRepository : WiseSayingRepository {
                 mkdirs()
             }
         }
+    }
+
+    internal fun saveLastId(lastId: Int) {
+        mkTableDirsIfNotExists()
+
+        tableDirPath.resolve("lastId.txt")
+            .toFile()
+            .writeText(lastId.toString())
+    }
+
+    internal fun loadLastId(): Int {
+        return try {
+            tableDirPath.resolve("lastId.txt")
+                .toFile()
+                .readText()
+                .toInt()
+        } catch (e: Exception) {
+            0
+        }
+    }
+
+    private fun loadLastIdAndIncrease(): Int {
+        val lastId = loadLastId()
+        saveLastId(lastId + 1)
+        return lastId
     }
 }
