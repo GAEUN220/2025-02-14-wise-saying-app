@@ -29,13 +29,19 @@ class WiseSayingFileRepository : WiseSayingRepository {
 
     override fun findById(id: Int): WiseSaying? {
         return tableDirPath
+            .resolve("$id.json")
             .toFile()
-            .listFiles()
-            ?.find { it.name == "${id}.json" }
-            ?.let { WiseSaying.fromJsonStr(it.readText()) }
+            .takeIf { it.exists() }
+            ?.readText()
+            ?.let(WiseSaying.Companion::fromJsonStr)
     }
 
     override fun delete(wiseSaying: WiseSaying) {
+        tableDirPath
+            .resolve("${wiseSaying.id}.json")
+            .toFile()
+            .takeIf { it.exists() }
+            ?.delete()
     }
 
     override fun clear() {
