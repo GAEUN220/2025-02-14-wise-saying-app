@@ -31,4 +31,8 @@ class WiseSayingService {
 
         wiseSayingRepository.save(wiseSaying)
     }
+
+    fun build() {
+        wiseSayingRepository.build()
+    }
 }

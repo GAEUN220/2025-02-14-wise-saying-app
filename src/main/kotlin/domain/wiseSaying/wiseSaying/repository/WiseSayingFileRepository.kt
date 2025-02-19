@@ -1,8 +1,8 @@
-
 package com.ll.domain.wiseSaying.wiseSaying.repository
 
 import com.ll.domain.wiseSaying.wiseSaying.entity.WiseSaying
 import com.ll.global.app.AppConfig
+import com.ll.standard.util.json.JsonUtil
 import java.nio.file.Path
 
 class WiseSayingFileRepository : WiseSayingRepository {
@@ -22,6 +22,7 @@ class WiseSayingFileRepository : WiseSayingRepository {
     override fun isEmpty(): Boolean {
         return tableDirPath.toFile()
             .listFiles()
+            ?.filter { it.name != "data.json" }
             ?.none { it.name.endsWith(".json") }
             ?: true
     }
@@ -29,6 +30,7 @@ class WiseSayingFileRepository : WiseSayingRepository {
     override fun findAll(): List<WiseSaying> {
         return tableDirPath.toFile()
             .listFiles()
+            ?.filter { it.name != "data.json" }
             ?.filter { it.name.endsWith(".json") }
             ?.map { it.readText() }
             ?.map(WiseSaying.Companion::fromJsonStr)
@@ -54,6 +56,21 @@ class WiseSayingFileRepository : WiseSayingRepository {
 
     override fun clear() {
         tableDirPath.toFile().deleteRecursively()
+    }
+
+    override fun build() {
+        mkTableDirsIfNotExists()
+
+        val mapList = findAll()
+            .map(WiseSaying::map)
+
+        JsonUtil.toString(mapList)
+            .let {
+                tableDirPath
+                    .resolve("data.json")
+                    .toFile()
+                    .writeText(it)
+            }
     }
 
     private fun saveOnDisk(wiseSaying: WiseSaying) {
