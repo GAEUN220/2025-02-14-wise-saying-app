@@ -14,6 +14,13 @@ class WiseSayingService {
         return wiseSayingRepository.isEmpty()
     }
 
+    fun findByKeyword(keywordType: String, keyword: String): List<WiseSaying> {
+        return when ( keywordType ) {
+            "author" -> wiseSayingRepository.findByAuthorLike("%$keyword%")
+            else -> wiseSayingRepository.findByAuthorContent("%$keyword%")
+        }
+    }
+
     fun findAll(): List<WiseSaying> {
         return wiseSayingRepository.findAll()
     }

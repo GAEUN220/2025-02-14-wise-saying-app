@@ -23,10 +23,25 @@ class WiseSayingController {
             return
         }
 
+        val keywordType = rq.getParamValue("keywordType", "content")
+        val keyword = rq.getParamValue("keyword", "")
+
+        val wiseSayings = if (keyword.isNotBlank())
+            wiseSayingService.findByKeyword(keywordType, keyword)
+        else
+            wiseSayingService.findAll()
+
+        if (keyword.isNotBlank()) {
+            println("----------------------")
+            println("검색타입 : $keywordType")
+            println("검색어 : $keyword")
+            println("----------------------")
+        }
+
         println("번호 / 작가 / 명언")
         println("----------------------")
 
-        wiseSayingService.findAll().forEach {
+        wiseSayings.forEach {
             println("${it.id} / ${it.author} / ${it.content}")
         }
     }

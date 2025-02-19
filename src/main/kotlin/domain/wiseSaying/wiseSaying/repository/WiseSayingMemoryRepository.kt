@@ -38,4 +38,34 @@ class WiseSayingMemoryRepository : WiseSayingRepository {
     }
 
     override fun build() {}
+    override fun findByAuthorLike(authorLike: String): List<WiseSaying> {
+        val pureKeyword = authorLike.replace("%", "")
+        if (pureKeyword.isBlank()) {
+            return wiseSayings
+        }
+        return if (authorLike.startsWith("%") && authorLike.endsWith("%")) {
+            wiseSayings.filter { it.author.contains(pureKeyword) }
+        } else if (authorLike.startsWith("%")) {
+            wiseSayings.filter { it.author.endsWith(pureKeyword) }
+        } else if (authorLike.endsWith("%")) {
+            wiseSayings.filter { it.author.startsWith(pureKeyword) }
+        } else {
+            wiseSayings.filter { it.author == pureKeyword }
+        }
+    }
+    override fun findByAuthorContent(contentLike: String): List<WiseSaying> {
+        val pureKeyword = contentLike.replace("%", "")
+        if (pureKeyword.isBlank()) {
+            return wiseSayings
+        }
+        return if (contentLike.startsWith("%") && contentLike.endsWith("%")) {
+            wiseSayings.filter { it.content.contains(pureKeyword) }
+        } else if (contentLike.startsWith("%")) {
+            wiseSayings.filter { it.content.endsWith(pureKeyword) }
+        } else if (contentLike.endsWith("%")) {
+            wiseSayings.filter { it.content.startsWith(pureKeyword) }
+        } else {
+            wiseSayings.filter { it.content == pureKeyword }
+        }
+    }
 }
