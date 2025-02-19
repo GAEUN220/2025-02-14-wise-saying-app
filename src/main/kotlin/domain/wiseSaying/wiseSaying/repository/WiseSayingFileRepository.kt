@@ -20,11 +20,19 @@ class WiseSayingFileRepository : WiseSayingRepository {
     }
 
     override fun isEmpty(): Boolean {
-        return true
+        return tableDirPath.toFile()
+            .listFiles()
+            ?.none { it.name.endsWith(".json") }
+            ?: true
     }
 
     override fun findAll(): List<WiseSaying> {
-        return listOf()
+        return tableDirPath.toFile()
+            .listFiles()
+            ?.filter { it.name.endsWith(".json") }
+            ?.map { it.readText() }
+            ?.map(WiseSaying.Companion::fromJsonStr)
+            .orEmpty()
     }
 
     override fun findById(id: Int): WiseSaying? {
